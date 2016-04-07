@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<style>
+			body {
+				color: #fff;
+				font-family:Monospace;
+				font-size:13px;
+				margin: 0px;
+			}
+			#container{
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+		</div>
+		<script src="scripts/js/three.min.js"></script>
+		<script src="scripts/js/OrbitControls.js"></script>
+		<script>
+			var renderSize;
+			var container = document.getElementById("container");
+			var PATH = './assets/';
+			var mouse = new THREE.Vector2(0.0, 0.0);
+			var scene, camera, renderer;
+			var material, geometry, mesh;
+			var loader = new THREE.TextureLoader();
+			var mouseDown = false;
+			init();    
+
+			function init() {
+			    
+			    setRenderSize();
+			    scene = new THREE.Scene();
+			    renderer = new THREE.WebGLRenderer({
+			        preserveDrawingBuffer: true,
+			        antialias: true
+			    });
+			    renderer.setSize(renderSize.x, renderSize.y);
+			    renderer.setClearColor(0xffffff, 1.0);
+			    camera = new THREE.PerspectiveCamera(45, renderSize.x/renderSize.y, 0.01, 10000);
+			    camera.position.z = 1000;
+
+			    controls = new THREE.OrbitControls(camera);
+
+			    container.appendChild(renderer.domElement);
+
+			    geometry = new THREE.CubeGeometry(100,100,100);
+			    material = new THREE.MeshBasicMaterial({
+			        color: 0xff0000
+			    })
+			    mesh = new THREE.Mesh(geometry, material);
+			    scene.add(mesh);
+			    mesh.position.z = 0;
+
+			    window.addEventListener("resize", onWindowResize);
+			    document.addEventListener("mousemove", onMouseMove);
+			    document.addEventListener("mousedown", onMouseDown);
+			    document.addEventListener("mouseup", onMouseUp);
+			    document.addEventListener('touchstart', onDocumentTouchStart, false);
+			    document.addEventListener('touchdown', onDocumentTouchStart, false);
+			    document.addEventListener('touchmove', onDocumentTouchMove, false);
+			    animate();
+			}
+
+			function animate() {
+			    id = requestAnimationFrame(animate);
+			    draw();
+			}
+
+			function draw() {
+			   			    
+			    renderer.render(scene, camera);
+
+			}
+			function onMouseMove(event) {
+			    mouse.x = (event.pageX / renderSize.x) * 2 - 1;  
+			    mouse.y = -(event.pageY / renderSize.y) * 2 + 1;
+			}
+			function onMouseDown() {
+			    mouseDown = true;
+			}
+			function onMouseUp() {
+			    mouseDown = false;
+			}
+			function onDocumentTouchStart(event) {
+			    updateMouse(event);
+			}
+
+			function onDocumentTouchMove(event) {
+			    updateMouse(event);
+			}
+
+			function updateMouse(event) {
+			    if (event.touches.length === 1) {
+			        event.preventDefault();
+			        mouse.x = (event.touches[0].pageX / renderSize.x) * 2 - 1;
+			        mouse.y = -(event.touches[0].pageY / renderSize.y) * 2 + 1;
+			    }
+			}
+
+			function onWindowResize(event) {
+			    setRenderSize();
+			    renderer.setSize(renderSize.x, renderSize.y);
+			}
+
+			function setRenderSize(){
+			    renderSize = new THREE.Vector2(window.innerWidth, window.innerHeight);
+			}
+		</script>
+	</body>
+</html>
